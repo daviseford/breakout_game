@@ -38,7 +38,14 @@ var run = function () {
   function drawScore() {
     ctx.font = '16px Arial';
     ctx.fillStyle = '#0095DD';
-    ctx.fillText('Score' + score, 8, 20);
+    ctx.fillText('Score ' + score, 8, 20);
+  }
+
+  function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if (relativeX > 0 && relativeX < canvas.width) {
+      paddleX = relativeX - paddleWidth / 2;
+    }
   }
 
   function keyDownHandler(e) {
@@ -160,11 +167,20 @@ var run = function () {
 
     x += dx;
     y += dy;
+
+    /*
+     The draw() function is now getting executed again and again within a requestAnimationFrame() loop,
+     but instead of the fixed 10 milliseconds frame rate, we are giving control of the framerate back to the browser.
+     It will sync the framerate accordingly and render the shapes only when needed.
+     This produces a more efficient, smoother animation loop than the older setInterval() method.
+     */
+    requestAnimationFrame(draw);
   }
 
   document.addEventListener("keydown", keyDownHandler, false);
   document.addEventListener("keyup", keyUpHandler, false);
+  document.addEventListener("mousemove", mouseMoveHandler, false);
   drawInitialBricks();
-  setInterval(draw, 10);
+  draw();
 
 };
